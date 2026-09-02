@@ -1,0 +1,41 @@
+{
+  "expo": {
+    "name": "InspectorClean",
+    "slug": "inspector-clean",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "scheme": "inspectorclean",
+    "userInterfaceStyle": "light",
+    "splash": {
+      "image": "./assets/splash-icon.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
+    "android": {
+      "package": "com.dannyleyva85.inspectorclean",
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#ffffff"
+      },
+      "permissions": [
+        "android.permission.CAMERA",
+        "android.permission.READ_EXTERNAL_STORAGE",
+        "android.permission.WRITE_EXTERNAL_STORAGE"
+      ]
+    },
+    "plugins": [
+      [
+        "expo-image-picker",
+        {
+          "cameraPermission": "La aplicación necesita acceso a la cámara para tomar fotos de las inspecciones."
+        }
+      ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "103f9542-ff6c-4055-9d83-f6b738fdabe3"
+      }
+    }
+  }
+}
