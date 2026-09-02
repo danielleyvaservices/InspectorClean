@@ -12,6 +12,10 @@
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.dannyleyva85.inspectorclean"
+    },
     "android": {
       "package": "com.dannyleyva85.inspectorclean",
       "adaptiveIcon": {
