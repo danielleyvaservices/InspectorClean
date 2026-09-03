@@ -151,13 +151,15 @@ const [isLangModalVisible, setLangModalVisible] = useState(false);
     setModalForgotVisible(false);
   };
 
-  // --- CÁMARA REAL Y CAPTURA ---
+// --- CÁMARA REAL Y CAPTURA ---
   const tomarFotoEvidencia = async () => {
     const perm = await ImagePicker.requestCameraPermissionsAsync();
+    if (!perm.granted) {
       Alert.alert('Permiso Denegado', 'Se requiere acceso a la cámara.');
       return;
     }
     const res = await ImagePicker.launchCameraAsync({ allowsEditing: true, quality: 0.7 });
+    if (!res.canceled) {
       Alert.alert('Foto Capturada', 'Imagen guardada correctamente como evidencia.');
     }
   };
