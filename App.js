@@ -5,6 +5,75 @@ import * as MailComposer from 'expo-mail-composer';
 import React, { useState, useEffect } from 'react';
 import { Text, View, TouchableOpacity, ScrollView, SafeAreaView, Alert, TextInput, StyleSheet, Linking } from 'react-native';
 import { Camera, CameraView, useCameraPermissions } from 'expo-camera';
+const LANGUAGES = [
+  { code: 'es', label: 'Español (Latinoamérica)', flag: '🇲🇽' },
+  { code: 'fr', label: 'Français', flag: '🇫🇷' },
+  { code: 'en', label: 'English', flag: '🇺🇸' },
+  { code: 'pt', label: 'Português', flag: '🇧🇷' },
+  { code: 'it', label: 'Italiano', flag: '🇮🇹' },
+  { code: 'el', label: 'Ελληνικά (Griego)', flag: '🇬🇷' },
+  { code: 'de', label: 'Deutsch', flag: '🇩🇪' },
+  { code: 'ko', label: '한국어 (Coreano)', flag: '🇰🇷' },
+  { code: 'ja', label: '日本語 (Japonés)', flag: '🇯🇵' },
+  { code: 'ar', label: 'العربية (Árabe)', flag: '🇸🇦' },
+  { code: 'zh', label: '中文 (Chino)', flag: '🇨🇳' },
+];
+{/* BOTÓN SUPERIOR DE CONFIGURACIÓN DE IDIOMA */}
+<View style={{ flexDirection: 'row', justifyContent: 'flex-end', paddingHorizontal: 20, paddingTop: 10 }}>
+  <TouchableOpacity
+    style={{ flexDirection: 'row', alignItems: 'center', backgroundColor: '#FFF', padding: 8, borderRadius: 20, elevation: 2 }}
+    onPress={() => setLangModalVisible(true)}
+  >
+    <Ionicons name="settings-outline" size={22} color="#444" />
+    <MaterialIcons name="language" size={22} color="#007AFF" style={{ marginLeft: 6 }} />
+  </TouchableOpacity>
+</View>
+
+{/* MODAL DESPLEGABLE CON LOS 11 IDIOMAS */}
+<Modal
+  visible={isLangModalVisible}
+  animationType="slide"
+  transparent={true}
+  onRequestClose={() => setLangModalVisible(false)}
+>
+  <View style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'flex-end' }}>
+    <View style={{ backgroundColor: '#FFF', borderTopLeftRadius: 20, borderTopRightRadius: 20, padding: 20, maxHeight: '70%' }}>
+      <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 15, borderBottomWidth: 1, borderBottomColor: '#EEE', paddingBottom: 10 }}>
+        <Text style={{ fontSize: 18, fontWeight: 'bold' }}>Seleccionar Idioma / Select Language</Text>
+        <TouchableOpacity onPress={() => setLangModalVisible(false)}>
+          <Ionicons name="close" size={26} color="#333" />
+        </TouchableOpacity>
+      </View>
+
+      <FlatList
+        data={LANGUAGES}
+        keyExtractor={(item) => item.code}
+        renderItem={({ item }) => (
+          <TouchableOpacity
+            style={{
+              flexDirection: 'row',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              paddingVertical: 14,
+              paddingHorizontal: 10,
+              backgroundColor: currentLang === item.code ? '#EBF3FF' : 'transparent',
+              borderRadius: 8
+            }}
+            onPress={() => {
+              setCurrentLang(item.code);
+              setLangModalVisible(false);
+            }}
+          >
+            <Text style={{ fontSize: 16 }}>{item.flag}   {item.label}</Text>
+            {currentLang === item.code && (
+              <Ionicons name="checkmark-circle" size={20} color="#007AFF" />
+            )}
+          </TouchableOpacity>
+        )}
+      />
+    </View>
+  </View>
+</Modal>
 
 const TRANSLATIONS = {
   es: {
@@ -60,7 +129,8 @@ const TRANSLATIONS = {
 };
 
 export default function App() {
-
+const [currentLang, setCurrentLang] = useState('es'); // Español oficial por defecto
+const [isLangModalVisible, setLangModalVisible] = useState(false);
   // --- SOPORTE Y RECUPERACIÓN DE CONTRASEÑA ---
   const [modalForgotVisible, setModalForgotVisible] = useState(false);
   const [forgotNombre, setForgotNombre] = useState('');
