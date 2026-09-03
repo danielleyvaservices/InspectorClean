@@ -1,0 +1,442 @@
+import React, { useState, useEffect } from 'react';
+import { 
+  Text, View, TouchableOpacity, ScrollView, SafeAreaView, Alert, 
+  TextInput, StyleSheet, ImageBackground, Modal, FlatList 
+} from 'react-native';
+import { CameraView, useCameraPermissions } from 'expo-camera';
+import * as Print from 'expo-print';
+import * as Sharing from 'expo-sharing';
+
+const TRANSLATIONS = {
+  es: {
+    title: '🧹 InspectorClean',
+    subtitle: 'Gestión Empresarial y Operativa',
+    user: 'Usuario:',
+    pass: 'Contraseña:',
+    loginBtn: 'Iniciar Sesión',
+    forgotPass: '¿Olvidaste tu contraseña?',
+    quickAccess: '💡 Accesos Rápidos (Roles):',
+    welcome: 'Bienvenido',
+    logout: '🚪 Cerrar Sesión',
+    back: '⬅️ Volver',
+    cartera: '📁 Cartera General de Contratos',
+    createContract: '🏢 Crear o Editar Contrato',
+    reports: '📊 Reportes',
+    viewSections: '🔍 Evaluación',
+    btnAltaPersonal: '👤 Usuarios',
+    btnAlertaAdmin: '✉️ Mensajes',
+    btnComandas: '📦 Comandas',
+  },
+  en: {
+    title: '🧹 InspectorClean',
+    subtitle: 'Business & Operations Management',
+    user: 'Username:',
+    pass: 'Password:',
+    loginBtn: 'Sign In',
+    forgotPass: 'Forgot password?',
+    quickAccess: '💡 Quick Logins:',
+    welcome: 'Welcome',
+    logout: '🚪 Sign Out',
+    back: '⬅️ Back',
+    cartera: '📁 General Contract Portfolio',
+    createContract: '🏢 Create or Edit Contract',
+    reports: '📊 Reports',
+    viewSections: '🔍 Evaluation',
+    btnAltaPersonal: '👤 Users',
+    btnAlertaAdmin: '✉️ Messages',
+    btnComandas: '📦 Orders',
+  }
+};
+
+export default function App() {
+  const [u, setU] = useState('soporte1');
+  const [p, setP] = useState('1234'); 
+  const [usuarioActual, setUsuarioActual] = useState(null);
+  const [fase, setFase] = useState('LOGIN'); 
+
+  const [idiomaActual, setIdiomaActual] = useState('es');
+  const t = TRANSLATIONS[idiomaActual] || TRANSLATIONS.es;
+
+  // Recuperación de Contraseña
+  const [modalOlvido, setModalOlvido] = useState(false);
+  const [reqNombre, setReqNombre] = useState('');
+  const [reqTel, setReqTel] = useState('');
+  const [reqCorreo, setReqCorreo] = useState('');
+
+  // Cámara Nativa Real
+  const [permission, requestPermission] = useCameraPermissions();
+  const [camaraActiva, setCamaraActiva] = useState(false);
+  const [cameraRef, setCameraRef] = useState(null);
+  const [fotoEvidencia, setFotoEvidencia] = useState(null);
+
+  // Jerarquía Completa de Usuarios
+  const [usuariosDB, setUsuariosDB] = useState([
+    { id: '1', nombre: 'Director', apellidos: 'CEO', user: 'ceo', pass: '1234', rol: 'CEO', tel: '555-0000', email: 'ceo@inspectorclean.com', jefeInmediato: 'N/A', contratoAsignado: 'TODOS' },
+    { id: '2', nombre: 'Admin Uno', apellidos: 'Pérez', user: 'admin1', pass: '1234', rol: 'ADMINISTRADOR', tel: '555-0001', email: 'admin1@inspectorclean.com', jefeInmediato: 'Director CEO', contratoAsignado: 'TODOS' },
+    { id: '3', nombre: 'Soporte', apellidos: 'Técnico', user: 'soporte1', pass: '1234', rol: 'SOPORTE', tel: '555-0002', email: 'soporte@inspectorclean.com', jefeInmediato: 'Director CEO', contratoAsignado: 'TODOS' },
+    { id: '4', nombre: 'Jefe Ops', apellidos: 'Alfa', user: 'jefeops1', pass: '1234', rol: 'JEFE_DE_OPERACIONES', tel: '555-0003', email: 'ops1@inspectorclean.com', jefeInmediato: 'Director CEO', contratoAsignado: 'TODOS' },
+    { id: '5', nombre: 'Pedro', apellidos: 'Limpieza', user: 'jefe1', pass: '1234', rol: 'JEFE_DE_EQUIPO', tel: '555-9999', email: 'pedro@inspectorclean.com', jefeInmediato: 'Supervisor Ruta Delta', contratoAsignado: 'Torre Corporativa Reforma' }
+  ]);
+
+  // Cartera de Edificios/Contratos
+  const [edificios, setEdificios] = useState([
+    { id: '1', nombre: 'Torre Corporativa Reforma', tipo: 'Comercial', direccion: 'Av. Principal 100', pisosData: { "Piso 1": ['Baños', 'Cocina', 'Oficinas'] } },
+    { id: '2', nombre: 'Plaza Galerías', tipo: 'Comercial', direccion: 'Calle Sur 45', pisosData: { "PB": ['Pasillos', 'Sanitarios'] } }
+  ]);
+
+  // Mensajes y Alertas (Incluye Solicitudes de Contraseña)
+  const [alertasDB, setAlertasDB] = useState([
+    { id: 'alt-1', de: 'Pedro Limpieza', para: 'SOPORTE', mensaje: 'Falta acceso a bodega del Piso 2.', fecha: '02/09/2026 10:00 AM' }
+  ]);
+
+  // Comandas
+  const [comandasDB] = useState([
+    { id: 'cmd-1', contrato: 'Torre Corporativa Reforma', fecha: '02 Septiembre 2026', hora: '09:30 AM', items: [{ cantidad: '5', material: 'Cloro industrial 20L', stock: '2 unidades' }], estado: 'Pendiente' }
+  ]);
+
+  // Reportes Registrados
+  const [reportesGlobales, setReportesGlobales] = useState([
+    { id: 'rep-1', edificio: 'Torre Corporativa Reforma', supervisor: 'Pedro Limpieza', fechaHora: '02/09/2026 08:30 AM', tipo: 'Comercial', detalle: 'Inspección de rutina OK.' }
+  ]);
+
+  const login = () => {
+    const encontrado = usuariosDB.find(item => item.user.toLowerCase() === u.trim().toLowerCase() && item.pass === p);
+    if (encontrado) {
+      setUsuarioActual(encontrado);
+      setP('');
+      setFase('PANEL_PRINCIPAL');
+    } else {
+      Alert.alert("Error", "Usuario o contraseña incorrectos.");
+    }
+  };
+
+  const solicitarRecuperacionPass = () => {
+    if (!reqNombre.trim() || !reqTel.trim() || !reqCorreo.trim()) {
+      Alert.alert("Campos Incompletos", "Por favor ingresa nombre, teléfono y correo.");
+      return;
+    }
+
+    const nuevaSolicitud = {
+      id: 'req-' + Date.now(),
+      de: reqNombre.trim(),
+      para: 'SOPORTE',
+      mensaje: `⚠️ SOLICITUD DE RESTABLECIMIENTO DE CONTRASEÑA:\n- Nombre: ${reqNombre}\n- Teléfono: ${reqTel}\n- Correo: ${reqCorreo}`,
+      fecha: new Date().toLocaleString()
+    };
+
+    setAlertasDB([nuevaSolicitud, ...alertasDB]);
+    Alert.alert("Solicitud Enviada", "La solicitud se envió a Soporte Técnico. Verifica con el administrador.");
+    setReqNombre(''); setReqTel(''); setReqCorreo('');
+    setModalOlvido(false);
+  };
+
+  const abrirCamara = async () => {
+    if (!permission?.granted) {
+      const res = await requestPermission();
+      if (!res.granted) {
+        Alert.alert("Permiso Denegado", "Se requieren permisos para usar la cámara.");
+        return;
+      }
+    }
+    setCamaraActiva(true);
+  };
+
+  const tomarFoto = async () => {
+    if (cameraRef) {
+      try {
+        const photo = await cameraRef.takePictureAsync({ quality: 0.8 });
+        setFotoEvidencia(photo.uri);
+        setCamaraActiva(false);
+        Alert.alert("Foto Capturada", "Evidencia guardada exitosamente.");
+      } catch (err) {
+        Alert.alert("Error", "No se pudo capturar la imagen.");
+      }
+    }
+  };
+
+  // Exportar Comanda / Reporte en PDF
+  const exportarPDF = async (titulo, contenidoHTML) => {
+    try {
+      const { uri } = await Print.printToFileAsync({ html: contenidoHTML });
+      await Sharing.shareAsync(uri, { UTI: '.pdf', mimeType: 'application/pdf' });
+    } catch (e) {
+      Alert.alert("Error", "No se pudo generar o compartir el archivo PDF.");
+    }
+  };
+
+  return (
+    <SafeAreaView style={{ flex: 1, backgroundColor: '#f4f6f9' }}>
+      {/* 1. LOGIN CON FONDO PROFESIONAL */}
+      {fase === 'LOGIN' && (
+        <ImageBackground 
+          source={{ uri: 'https://images.unsplash.com/photo-1581578731548-c64695cc6952?q=80&w=1000&auto=format&fit=crop' }} 
+          style={{ flex: 1, justifyContent: 'center', padding: 20 }}
+        >
+          <View style={styles.overlayLogin}>
+            <Text style={styles.titleText}>{t.title}</Text>
+            <Text style={styles.subtitleText}>{t.subtitle}</Text>
+            
+            <Text style={styles.label}>{t.user}</Text>
+            <TextInput style={styles.input} value={u} onChangeText={setU} autoCapitalize="none" />
+            
+            <Text style={styles.label}>{t.pass}</Text>
+            <TextInput style={styles.input} secureTextEntry value={p} onChangeText={setP} />
+
+            <TouchableOpacity style={styles.btnPrimary} onPress={login}>
+              <Text style={styles.btnText}>{t.loginBtn}</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity style={{ marginTop: 15, alignItems: 'center' }} onPress={() => setModalOlvido(true)}>
+              <Text style={styles.linkText}>{t.forgotPass}</Text>
+            </TouchableOpacity>
+
+            {/* Accesos Rápidos */}
+            <Text style={{ marginTop: 20, fontWeight: 'bold', fontSize: 12, color: '#555' }}>{t.quickAccess}</Text>
+            <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginTop: 5 }}>
+              {usuariosDB.map((usr) => (
+                <TouchableOpacity 
+                  key={usr.id} 
+                  style={styles.chipRole}
+                  onPress={() => { setU(usr.user); setP(usr.pass); }}
+                >
+                  <Text style={{ fontSize: 11, color: '#2c3e50', fontWeight: 'bold' }}>{usr.rol}</Text>
+                </TouchableOpacity>
+              ))}
+            </ScrollView>
+          </View>
+
+          {/* Modal Olvidaste Contraseña */}
+          <Modal visible={modalOlvido} transparent animationType="slide">
+            <View style={styles.modalBg}>
+              <View style={styles.modalCard}>
+                <Text style={{ fontSize: 16, fontWeight: 'bold', marginBottom: 15, color: '#2c3e50' }}>🔑 Recuperar Contraseña</Text>
+                <TextInput style={styles.input} placeholder="Nombre completo" value={reqNombre} onChangeText={setReqNombre} />
+                <TextInput style={styles.input} placeholder="Teléfono de contacto" keyboardType="phone-pad" value={reqTel} onChangeText={setReqTel} />
+                <TextInput style={styles.input} placeholder="Correo electrónico" keyboardType="email-address" value={reqCorreo} onChangeText={setReqCorreo} autoCapitalize="none" />
+
+                <TouchableOpacity style={[styles.btnPrimary, { backgroundColor: '#27ae60' }]} onPress={solicitarRecuperacionPass}>
+                  <Text style={styles.btnText}>Enviar Solicitud a Soporte</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={[styles.btnPrimary, { backgroundColor: '#95a5a6', marginTop: 10 }]} onPress={() => setModalOlvido(false)}>
+                  <Text style={styles.btnText}>Cancelar</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </Modal>
+        </ImageBackground>
+      )}
+
+      {/* 2. PANEL PRINCIPAL Y MÓDULOS */}
+      {fase !== 'LOGIN' && usuarioActual && (
+        <View style={{ flex: 1, padding: 15 }}>
+          {/* Encabezado */}
+          <View style={styles.header}>
+            <Text style={{ fontSize: 18, fontWeight: 'bold', color: '#2c3e50' }}>{t.welcome}, {usuarioActual.nombre}</Text>
+            <Text style={{ fontSize: 12, color: '#7f8c8d' }}>Rol: {usuarioActual.rol} | Contrato: {usuarioActual.contratoAsignado}</Text>
+          </View>
+
+          <ScrollView style={{ flex: 1, marginTop: 10 }}>
+            {/* BOTONES PRINCIPALES DE INTERFAZ */}
+            {fase === 'PANEL_PRINCIPAL' && (
+              <View>
+                <TouchableOpacity style={styles.menuBtn} onPress={() => setFase('CARTERA')}>
+                  <Text style={styles.menuBtnText}>{t.cartera}</Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity style={styles.menuBtn} onPress={() => setFase('EVALUACION')}>
+                  <Text style={styles.menuBtnText}>{t.viewSections}</Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity style={styles.menuBtn} onPress={() => setFase('REPORTES')}>
+                  <Text style={styles.menuBtnText}>{t.reports}</Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity style={styles.menuBtn} onPress={() => setFase('COMANDAS')}>
+                  <Text style={styles.menuBtnText}>{t.btnComandas}</Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity style={styles.menuBtn} onPress={() => setFase('USUARIOS')}>
+                  <Text style={styles.menuBtnText}>{t.btnAltaPersonal}</Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity style={[styles.menuBtn, { backgroundColor: '#8e44ad' }]} onPress={() => setFase('MENSAJES')}>
+                  <Text style={styles.menuBtnText}>{t.btnAlertaAdmin} ({alertasDB.length})</Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity style={[styles.btnPrimary, { backgroundColor: '#e74c3c', marginTop: 20 }]} onPress={() => setFase('LOGIN')}>
+                  <Text style={styles.btnText}>{t.logout}</Text>
+                </TouchableOpacity>
+              </View>
+            )}
+
+            {/* MÓDULO: CARTERA DE CONTRATOS */}
+            {fase === 'CARTERA' && (
+              <View>
+                <Text style={styles.sectionTitle}>{t.cartera}</Text>
+                {edificios.map(ed => (
+                  <View key={ed.id} style={styles.card}>
+                    <Text style={{ fontWeight: 'bold', fontSize: 16 }}>🏢 {ed.nombre}</Text>
+                    <Text>Tipo: {ed.tipo}</Text>
+                    <Text>Dirección: {ed.direccion}</Text>
+                  </View>
+                ))}
+                <TouchableOpacity style={styles.btnBack} onPress={() => setFase('PANEL_PRINCIPAL')}>
+                  <Text style={styles.btnText}>{t.back}</Text>
+                </TouchableOpacity>
+              </View>
+            )}
+
+            {/* MÓDULO: EVALUACIÓN CON CÁMARA REAL */}
+            {fase === 'EVALUACION' && (
+              <View>
+                <Text style={styles.sectionTitle}>🔍 Evaluación en Campo</Text>
+                <TouchableOpacity style={[styles.btnPrimary, { backgroundColor: '#2980b9', marginBottom: 15 }]} onPress={abrirCamara}>
+                  <Text style={styles.btnText}>📷 Abrir Cámara y Capturar Evidencia</Text>
+                </TouchableOpacity>
+
+                {fotoEvidencia && (
+                  <Text style={{ color: '#27ae60', fontWeight: 'bold', marginBottom: 10 }}>✓ Foto adjuntada correctamente</Text>
+                )}
+
+                <TouchableOpacity style={styles.btnBack} onPress={() => setFase('PANEL_PRINCIPAL')}>
+                  <Text style={styles.btnText}>{t.back}</Text>
+                </TouchableOpacity>
+              </View>
+            )}
+
+            {/* MÓDULO: USUARIOS Y JERARQUÍA */}
+            {fase === 'USUARIOS' && (
+              <View>
+                <Text style={styles.sectionTitle}>👤 Lista de Personal y Jerarquía</Text>
+                {usuariosDB.map(usr => (
+                  <View key={usr.id} style={styles.card}>
+                    <Text style={{ fontWeight: 'bold', fontSize: 15 }}>{usr.nombre} {usr.apellidos}</Text>
+                    <Text style={{ color: '#2980b9', fontWeight: 'bold' }}>Rol: {usr.rol}</Text>
+                    <Text>Jefe Inmediato: {usr.jefeInmediato}</Text>
+                    <Text>Tel: {usr.tel} | Correo: {usr.email}</Text>
+                    <Text style={{ fontSize: 11, color: '#7f8c8d' }}>Contrato: {usr.contratoAsignado}</Text>
+                  </View>
+                ))}
+                <TouchableOpacity style={styles.btnBack} onPress={() => setFase('PANEL_PRINCIPAL')}>
+                  <Text style={styles.btnText}>{t.back}</Text>
+                </TouchableOpacity>
+              </View>
+            )}
+
+            {/* MÓDULO: MENSAJES Y RECUPERACIÓN DE CONTRASEÑA */}
+            {fase === 'MENSAJES' && (
+              <View>
+                <Text style={styles.sectionTitle}>✉️ Mensajes y Solicitudes de Soporte</Text>
+                {alertasDB.map(alt => (
+                  <View key={alt.id} style={[styles.card, { borderColor: '#8e44ad', borderWidth: 1 }]}>
+                    <Text style={{ fontWeight: 'bold', color: '#8e44ad' }}>De: {alt.de}</Text>
+                    <Text style={{ fontSize: 12, color: '#7f8c8d' }}>{alt.fecha}</Text>
+                    <Text style={{ marginTop: 5 }}>{alt.mensaje}</Text>
+                  </View>
+                ))}
+                <TouchableOpacity style={styles.btnBack} onPress={() => setFase('PANEL_PRINCIPAL')}>
+                  <Text style={styles.btnText}>{t.back}</Text>
+                </TouchableOpacity>
+              </View>
+            )}
+
+            {/* MÓDULO: COMANDAS Y EXPORTACIÓN A PDF */}
+            {fase === 'COMANDAS' && (
+              <View>
+                <Text style={styles.sectionTitle}>📦 Comandas y Pedidos</Text>
+                {comandasDB.map(cmd => (
+                  <View key={cmd.id} style={styles.card}>
+                    <Text style={{ fontWeight: 'bold' }}>{cmd.contrato}</Text>
+                    <Text>{cmd.fecha} - {cmd.hora}</Text>
+                    <TouchableOpacity 
+                      style={[styles.btnPrimary, { backgroundColor: '#27ae60', marginTop: 10 }]}
+                      onPress={() => exportarPDF('Comanda', `
+                        <h1>Comanda - InspectorClean</h1>
+                        <p>Contrato: ${cmd.contrato}</p>
+                        <p>Fecha: ${cmd.fecha}</p>
+                        <h3>Materiales:</h3>
+                        <ul>${cmd.items.map(i => `<li>${i.material} - ${i.cantidad}</li>`).join('')}</ul>
+                      `)}
+                    >
+                      <Text style={styles.btnText}>📄 Descargar/Enviar PDF</Text>
+                    </TouchableOpacity>
+                  </View>
+                ))}
+                <TouchableOpacity style={styles.btnBack} onPress={() => setFase('PANEL_PRINCIPAL')}>
+                  <Text style={styles.btnText}>{t.back}</Text>
+                </TouchableOpacity>
+              </View>
+            )}
+
+            {/* MÓDULO: REPORTES Y EXPORTACIÓN EN PDF */}
+            {fase === 'REPORTES' && (
+              <View>
+                <Text style={styles.sectionTitle}>📊 Reportes de Inspección</Text>
+                {reportesGlobales.map(rep => (
+                  <View key={rep.id} style={styles.card}>
+                    <Text style={{ fontWeight: 'bold' }}>{rep.edificio}</Text>
+                    <Text>Supervisor: {rep.supervisor}</Text>
+                    <Text>{rep.fechaHora}</Text>
+                    <TouchableOpacity 
+                      style={[styles.btnPrimary, { backgroundColor: '#27ae60', marginTop: 10 }]}
+                      onPress={() => exportarPDF('Reporte', `
+                        <h1>Reporte de Inspección</h1>
+                        <p><strong>Edificio:</strong> ${rep.edificio}</p>
+                        <p><strong>Supervisor:</strong> ${rep.supervisor}</p>
+                        <p><strong>Fecha:</strong> ${rep.fechaHora}</p>
+                        <p><strong>Detalle:</strong> ${rep.detalle}</p>
+                      `)}
+                    >
+                      <Text style={styles.btnText}>📄 Exportar Reporte a PDF</Text>
+                    </TouchableOpacity>
+                  </View>
+                ))}
+                <TouchableOpacity style={styles.btnBack} onPress={() => setFase('PANEL_PRINCIPAL')}>
+                  <Text style={styles.btnText}>{t.back}</Text>
+                </TouchableOpacity>
+              </View>
+            )}
+          </ScrollView>
+        </View>
+      )}
+
+      {/* MODAL DE CÁMARA REAL EN VIVO */}
+      <Modal visible={camaraActiva} animationType="slide">
+        <View style={{ flex: 1, backgroundColor: '#000' }}>
+          <CameraView style={{ flex: 1 }} ref={(ref) => setCameraRef(ref)}>
+            <View style={styles.cameraControls}>
+              <TouchableOpacity style={styles.btnCapture} onPress={tomarFoto}>
+                <Text style={{ fontWeight: 'bold' }}>CAPTURAR</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={[styles.btnCapture, { backgroundColor: '#e74c3c' }]} onPress={() => setCamaraActiva(false)}>
+                <Text style={{ color: '#fff', fontWeight: 'bold' }}>CANCELAR</Text>
+              </TouchableOpacity>
+            </View>
+          </CameraView>
+        </View>
+      </Modal>
+    </SafeAreaView>
+  );
+}
+
+const styles = StyleSheet.create({
+  overlayLogin: { backgroundColor: 'rgba(255, 255, 255, 0.94)', padding: 25, borderRadius: 12, elevation: 5 },
+  titleText: { fontSize: 26, fontWeight: 'bold', color: '#2c3e50', textAlign: 'center' },
+  subtitleText: { fontSize: 13, color: '#7f8c8d', textAlign: 'center', marginBottom: 20 },
+  label: { fontWeight: 'bold', color: '#34495e', marginBottom: 5 },
+  input: { backgroundColor: '#fff', borderWidth: 1, borderColor: '#cbd5e1', padding: 12, borderRadius: 8, marginBottom: 12 },
+  btnPrimary: { backgroundColor: '#34495e', padding: 14, borderRadius: 8, alignItems: 'center' },
+  btnText: { color: '#fff', fontWeight: 'bold', fontSize: 13 },
+  linkText: { color: '#2980b9', fontWeight: 'bold', fontSize: 13, textDecorationLine: 'underline' },
+  chipRole: { backgroundColor: '#e2e8f0', paddingHorizontal: 10, paddingVertical: 6, borderRadius: 15, marginRight: 6 },
+  header: { padding: 15, backgroundColor: '#fff', borderRadius: 8, elevation: 2 },
+  menuBtn: { backgroundColor: '#2c3e50', padding: 16, borderRadius: 8, marginBottom: 12 },
+  menuBtnText: { color: '#fff', fontWeight: 'bold', fontSize: 14, textAlign: 'center' },
+  btnBack: { backgroundColor: '#7f8c8d', padding: 12, borderRadius: 8, alignItems: 'center', marginTop: 15 },
+  sectionTitle: { fontSize: 18, fontWeight: 'bold', color: '#2c3e50', marginBottom: 12 },
+  card: { backgroundColor: '#fff', padding: 15, borderRadius: 8, marginBottom: 10, elevation: 1 },
+  modalBg: { flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'center', padding: 20 },
+  modalCard: { backgroundColor: '#fff', padding: 20, borderRadius: 10 },
+  cameraControls: { position: 'absolute', bottom: 40, left: 20, right: 20, flexDirection: 'row', justifyContent: 'space-around' },
+  btnCapture: { backgroundColor: '#fff', padding: 15, borderRadius: 30, paddingHorizontal: 25 }
+});
