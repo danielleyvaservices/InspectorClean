@@ -135,8 +135,8 @@ const [isLangModalVisible, setLangModalVisible] = useState(false);
   const [forgotNombre, setForgotNombre] = useState('');
   const [forgotTelefono, setForgotTelefono] = useState('');
   const [forgotCorreo, setForgotCorreo] = useState('');
-
   const enviarSolicitudSoporte1 = () => {
+    if (!forgotNombre || !forgotTelefono || !forgotCorreo) {
       Alert.alert('Campos Incompletos', 'Por favor llena todos los campos para notificar a Soporte 1.');
       return;
     }
