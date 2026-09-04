@@ -136,7 +136,8 @@ const [isLangModalVisible, setLangModalVisible] = useState(false);
   const [forgotTelefono, setForgotTelefono] = useState('');
   const [forgotCorreo, setForgotCorreo] = useState('');
 
-  const enviarSolicitudSoporte1 = () => {
+const enviarSolicitudSoporte1 = () => {
+    if (!forgotNombre || !forgotTelefono || !forgotCorreo) {
       Alert.alert('Campos Incompletos', 'Por favor llena todos los campos para notificar a Soporte 1.');
       return;
     }
@@ -149,7 +150,6 @@ const [isLangModalVisible, setLangModalVisible] = useState(false);
     setForgotCorreo('');
     setModalForgotVisible(false);
   };
-
 // --- CÁMARA REAL Y CAPTURA ---
   const tomarFotoEvidencia = async () => {
     const perm = await ImagePicker.requestCameraPermissionsAsync();
