@@ -1531,13 +1531,13 @@ const styles = StyleSheet.create({
     fontSize: 34,
     marginBottom: 8,
   },
-  tileText: {
+tileText: {
     fontSize: 13,
     fontWeight: 'bold',
     color: '#2c3e50',
     textAlign: 'center',
   }
-})
+});
 
 };
 
