@@ -149,6 +149,7 @@ const [isLangModalVisible, setLangModalVisible] = useState(false);
     setForgotCorreo('');
     setModalForgotVisible(false);
   };
+};
 
 // --- CÁMARA REAL Y CAPTURA ---
   const tomarFotoEvidencia = async () => {
