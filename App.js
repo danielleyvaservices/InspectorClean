@@ -4,140 +4,205 @@ import * as ImagePicker from 'expo-image-picker';
 import * as Print from 'expo-print';
 import * as Sharing from 'expo-sharing';
 
-const TEXTOS = {
-  es: { titulo: "InspectorClean", sub: "Daniel Leyva Services", usuario: "Correo corporativo", pass: "Contraseña", login: "Iniciar Sesión", denegado: "Acceso Denegado", modulos: "Módulos Autorizados", foto: "Capturar Evidencia", exportar: "Exportar y Compartir PDF", salir: "Cerrar Sesión", langName: "Español" },
-  fr: { titulo: "InspectorClean", sub: "Daniel Leyva Services", usuario: "Courriel professionnel", pass: "Mot de passe", login: "Se connecter", denegado: "Accès refusé", modulos: "Modules autorisés", foto: "Prendre une photo", exportar: "Exporter et partager PDF", salir: "Déconnexion", langName: "Français" },
-  en: { titulo: "InspectorClean", sub: "Daniel Leyva Services", usuario: "Corporate Email", pass: "Password", login: "Log In", denegado: "Access Denied", modulos: "Authorized Modules", foto: "Capture Evidence", exportar: "Export & Share PDF", salir: "Log Out", langName: "English" },
-  pt: { titulo: "InspectorClean", sub: "Daniel Leyva Services", usuario: "E-mail corporativo", pass: "Senha", login: "Entrar", denegado: "Acesso Negado", modulos: "Módulos Autorizados", foto: "Capturar Evidência", exportar: "Exportar e Compartilhar PDF", salir: "Sair", langName: "Português" },
-  ht: { titulo: "InspectorClean", sub: "Daniel Leyva Services", usuario: "Imèl korporatib", pass: "Mawon / Siyaj", login: "Konekte", denegado: "Aksè Refize", modulos: "Modil Otorize", foto: "Prensip Foto", exportar: "Ekspòte ak Pataje PDF", salir: "Dekonekte", langName: "Kreyòl Ayisyen" },
-  tl: { titulo: "InspectorClean", sub: "Daniel Leyva Services", usuario: "Kumpanya Email", pass: "Password", login: "Mag-login", denegado: "Access Denied", modulos: "Pinahintulutang Modyul", foto: "Kumuha ng Larawan", exportar: "I-export at Ibahagi ang PDF", salir: "Mag-logout", langName: "Tagalog" },
-  ar: { titulo: "InspectorClean", sub: "Daniel Leyva Services", usuario: "البريد الإلكتروني للشركة", pass: "كلمة المرور", login: "تسجيل الدخول", denegado: "تم رفض الوصول", modulos: "الوحدات المعتمدة", foto: "التقاط الصور", exportar: "تصدير ومشاركة PDF", salir: "تسجيل الخروج", langName: "العربية" },
-  pa: { titulo: "InspectorClean", sub: "Daniel Leyva Services", usuario: "ਕੋਰਪੋਰੇਟ ਈਮੇਲ", pass: "ਪਾਸਵਰਡ", login: "ਲੌਗ ਇਨ ਕਰੋ", denegado: "ਪਹੁੰਚ ਤੋਂ ਇਨਕਾਰ", modulos: "ਅਧਿਕਾਰਤ ਮੋਡੀਊਲ", foto: "ਤਸਵੀਰ ਲਓ", exportar: "PDF ਐਕਸਪੋਰਟ ਅਤੇ ਸਾਂਝਾ ਕਰੋ", salir: "ਲੌਗ ਆਉਟ", langName: "ਪੰਜਾਬੀ" },
-  zh: { titulo: "InspectorClean", sub: "Daniel Leyva Services", usuario: "公司电子邮件", pass: "密码", login: "登录", denegado: "拒绝访问", modulos: "授权模块", foto: "拍摄照片", exportar: "导出并分享 PDF", salir: "退出登录", langName: "中文" },
-  ru: { titulo: "InspectorClean", sub: "Daniel Leyva Services", usuario: "Корпоративная почта", pass: "Пароль", login: "Войти", denegado: "Доступ запрещен", modulos: "Авторизованные модули", foto: "Сделать фото", exportar: "Экспорт и отправка PDF", salir: "Выйти", langName: "Русский" },
-  pl: { titulo: "InspectorClean", sub: "Daniel Leyva Services", usuario: "E-mail firmowy", pass: "Hasło", login: "Zaloguj się", denegado: "Brak dostępu", modulos: "Uprawnione moduły", foto: "Zrób zdjęcie", exportar: "Eksportuj i udostępnij PDF", salir: "Wyloguj się", langName: "Polski" }
+// DICCIONARIO COMPLETO DE 11 IDIOMAS
+const TRADUCCIONES = {
+  es: { title: "InspectorClean", sub: "Daniel Leyva Services", user: "Correo corporativo", pass: "Contraseña", login: "Iniciar Sesión", logout: "Cerrar Sesión", selLang: "Idioma", contrato: "Contrato / Cliente", piso: "Piso / Nivel", seccion: "Sección / Área", foto: "Capturar Foto", pdf: "Generar Reporte PDF", metrics: "📊 Métricas y Rendimiento", contracts: "📋 Gestión de Contratos", equipo: "👥 Control de Personal" },
+  fr: { title: "InspectorClean", sub: "Daniel Leyva Services", user: "Courriel professionnel", pass: "Mot de passe", login: "Se connecter", logout: "Déconnexion", selLang: "Langue", contrato: "Contrat / Client", piso: "Étage / Niveau", seccion: "Section / Zone", foto: "Prendre une photo", pdf: "Générer Rapport PDF", metrics: "📊 Métriques et Performance", contracts: "📋 Gestion des Contrats", equipo: "👥 Contrôle du Personnel" },
+  en: { title: "InspectorClean", sub: "Daniel Leyva Services", user: "Corporate Email", pass: "Password", login: "Log In", logout: "Log Out", selLang: "Language", contrato: "Contract / Client", piso: "Floor / Level", seccion: "Section / Area", foto: "Capture Photo", pdf: "Generate PDF Report", metrics: "📊 Metrics & Performance", contracts: "📋 Contract Management", equipo: "👥 Staff Control" },
+  pt: { title: "InspectorClean", sub: "Daniel Leyva Services", user: "E-mail corporativo", pass: "Senha", login: "Entrar", logout: "Sair", selLang: "Idioma", contrato: "Contrato / Cliente", piso: "Andar / Nível", seccion: "Seção / Área", foto: "Tirar Foto", pdf: "Gerar Relatório PDF", metrics: "📊 Métricas e Desempenho", contracts: "📋 Gestão de Contratos", equipo: "👥 Controle de Equipe" },
+  ht: { title: "InspectorClean", sub: "Daniel Leyva Services", user: "Imèl korporatib", pass: "Mawon / Siyaj", login: "Konekte", logout: "Dekonekte", selLang: "Lang", contrato: "Kontra / Kliyan", piso: "Etaj / Nivo", seccion: "Seksyon / Zòn", foto: "Pran Foto", pdf: "Jenerasyon Rapò PDF", metrics: "📊 Metrik ak Pèfòmans", contracts: "📋 Jestyon Kontra", equipo: "👥 Kontwòl Ekip" },
+  tl: { title: "InspectorClean", sub: "Daniel Leyva Services", user: "Kumpanya Email", pass: "Password", login: "Mag-login", logout: "Mag-logout", selLang: "Wika", contrato: "Kondrata / Kliyente", piso: "Palapag / Antas", seccion: "Seksyon / Lugar", foto: "Kumuha ng Larawan", pdf: "Gumawa ng PDF Report", metrics: "📊 Sukat at Pagganap", contracts: "📋 Pamamahala ng Kontrata", equipo: "👥 Kontrol sa Tauhan" },
+  ar: { title: "InspectorClean", sub: "Daniel Leyva Services", user: "البريد الإلكتروني", pass: "كلمة المرور", login: "تسجيل الدخول", logout: "تسجيل الخروج", selLang: "اللغة", contrato: "العقد / العميل", piso: "الطابق / المستوى", seccion: "القسم / المنطقة", foto: "التقاط صورة", pdf: "إنشاء تقرير PDF", metrics: "📊 المقاييس والأداء", contracts: "📋 إدارة العقود", equipo: "👥 إدارة الفريق" },
+  pa: { title: "InspectorClean", sub: "Daniel Leyva Services", user: "ਕੋਰਪੋਰੇਟ ਈਮੇਲ", pass: "ਪਾਸਵਰਡ", login: "ਲੌਗ ਇਨ ਕਰੋ", logout: "ਲੌਗ ਆਉਟ", selLang: "ਭਾਸ਼ਾ", contrato: "ਕਰਾਰ / ਗਾਹਕ", piso: "ਮੰਜ਼ਿਲ / ਪੱਧਰ", seccion: "ਸੈਕਸ਼ਨ / ਖੇਤਰ", foto: "ਤਸਵੀਰ ਲਓ", pdf: "PDF ਰਿਪੋਰਟ ਬਣਾਓ", metrics: "📊 ਮੈਟ੍ਰਿਕਸ ਅਤੇ ਪ੍ਰਦਰਸ਼ਨ", contracts: "📋 ਕਰਾਰ ਪ੍ਰਬੰਧਨ", equipo: "👥 ਟੀਮ ਨਿਯੰਤਰਣ" },
+  zh: { title: "InspectorClean", sub: "Daniel Leyva Services", user: "公司电子邮件", pass: "密码", login: "登录", logout: "退出", selLang: "语言", contrato: "合同 / 客户", piso: "楼层 / 级别", seccion: "区域 / 部门", foto: "拍摄照片", pdf: "生成 PDF 报告", metrics: "📊 指标与绩效", contracts: "📋 合同管理", equipo: "👥 团队管理" },
+  ru: { title: "InspectorClean", sub: "Daniel Leyva Services", user: "Корпоративная почта", pass: "Пароль", login: "Войти", logout: "Выйти", selLang: "Язык", contrato: "Контракт / Клиент", piso: "Этаж / Уровень", seccion: "Секция / Зона", foto: "Сделать фото", pdf: "Создать PDF отчет", metrics: "📊 Метрики и показатели", contracts: "📋 Управление контрактами", equipo: "👥 Управление персоналом" },
+  pl: { title: "InspectorClean", sub: "Daniel Leyva Services", user: "E-mail firmowy", pass: "Hasło", login: "Zaloguj się", logout: "Wyloguj się", selLang: "Język", contrato: "Umowa / Klient", piso: "Piętro / Poziom", seccion: "Sekcja / Strefa", foto: "Zrób zdjęcie", pdf: "Generuj Raport PDF", metrics: "📊 Metryki i Wydajność", contracts: "📋 Zarządzanie Umowami", equipo: "👥 Kontrola Personelu" }
 };
 
-const USUARIOS_PERMITIDOS = {
+// USUARIOS Y ROLES DEFINITIVOS
+const ROLES_MAP = {
   'ceo@leyvaservices.com': { pass: 'CEO2026!', rol: 'CEO', nombre: 'Daniel Leyva' },
   'admin@leyvaservices.com': { pass: 'Admin2026!', rol: 'Administrador', nombre: 'Admin Sistema' },
   'soporte@leyvaservices.com': { pass: 'Soporte2026!', rol: 'Soporte', nombre: 'Equipo Soporte' },
-  'ops@leyvaservices.com': { pass: 'Ops2026!', rol: 'Jefe de Operaciones', nombre: 'Jefe Operaciones' },
+  'ops@leyvaservices.com': { pass: 'Ops2026!', rol: 'Jefe de Operaciones', nombre: 'Jefe Ops' },
   'sup_contratos@leyvaservices.com': { pass: 'SupCon2026!', rol: 'Supervisor de Contratos', nombre: 'Sup. Contratos' },
   'lider_contratos@leyvaservices.com': { pass: 'LiderCon2026!', rol: 'Líder de Contratos', nombre: 'Líder Contratos' },
   'supervisor@leyvaservices.com': { pass: 'Sup2026!', rol: 'Supervisor', nombre: 'Supervisor Campo' },
-  'jefe_equipo@leyvaservices.com': { pass: 'JefeEq2026!', rol: 'Jefe de Equipo', nombre: 'Jefe de Equipo' },
+  'jefe_equipo@leyvaservices.com': { pass: 'JefeEq2026!', rol: 'Jefe de Equipo', nombre: 'Jefe Equipo' },
 };
 
 export default function App() {
   const [lang, setLang] = useState('es');
-  const [usuario, setUsuario] = useState('');
-  const [password, setPassword] = useState('');
-  const [usuarioLogueado, setUsuarioLogueado] = useState(null);
+  const [email, setEmail] = useState('');
+  const [pass, setPass] = useState('');
+  const [user, setUser] = useState(null);
+
+  // CAMPOS DE INSPECCIÓN
+  const [contrato, setContrato] = useState('');
+  const [piso, setPiso] = useState('');
+  const [seccion, setSeccion] = useState('');
   const [fotos, setFotos] = useState([]);
-  const [titulo, setTitulo] = useState('');
 
-  const t = TEXTOS[lang];
+  const t = TRADUCCIONES[lang];
 
-  const manejarLogin = () => {
-    const userClean = usuario.trim().toLowerCase();
-    const userEncontrado = USUARIOS_PERMITIDOS[userClean];
-
-    if (userEncontrado && userEncontrado.pass === password) {
-      setUsuarioLogueado(userEncontrado);
+  const login = () => {
+    const cleanEmail = email.trim().toLowerCase();
+    const match = ROLES_MAP[cleanEmail];
+    if (match && match.pass === pass) {
+      setUser(match);
     } else {
-      Alert.alert(t.denegado, 'Usuario o contraseña incorrectos.');
+      Alert.alert("Acceso Denegado", "Credenciales incorrectas. Use una cuenta de Daniel Leyva Services.");
     }
   };
 
   const tomarFoto = async () => {
     const perm = await ImagePicker.requestCameraPermissionsAsync();
     if (!perm.granted) return;
-    const result = await ImagePicker.launchCameraAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      quality: 0.5,
-      base64: true,
-    });
-    if (!result.canceled && result.assets && result.assets[0]) {
-      setFotos([...fotos, result.assets[0]]);
+    const res = await ImagePicker.launchCameraAsync({ quality: 0.5, base64: true });
+    if (!res.canceled && res.assets && res.assets[0]) {
+      setFotos([...fotos, res.assets[0]]);
     }
   };
 
   const generarPDF = async () => {
-    if (!titulo) return;
-    const imagenesHTML = fotos.map(f => 
-      `<div style="margin-bottom: 15px; text-align: center;">
-        <img src="data:image/jpeg;base64,${f.base64}" style="width: 90%; max-width: 500px; height: auto; border-radius: 8px;" />
+    if (!contrato || !piso || !seccion) {
+      Alert.alert("Atención", "Por favor complete Contrato, Piso y Sección.");
+      return;
+    }
+    const htmlFotos = fotos.map(f => 
+      `<div style="text-align:center; margin-bottom:15px;">
+        <img src="data:image/jpeg;base64,${f.base64}" style="width:90%; max-width:500px; border-radius:8px; border:1px solid #ccc;"/>
        </div>`
     ).join('');
 
-    const htmlContent = `
+    const html = `
       <html>
-        <body style="font-family: Arial, sans-serif; padding: 20px;">
-          <h1 style="color: #003366; text-align: center;">Daniel Leyva Services</h1>
-          <h2 style="text-align: center;">Reporte: ${titulo}</h2>
-          <p><strong>Inspector:</strong> ${usuarioLogueado.nombre} (${usuarioLogueado.rol})</p>
-          <hr />
-          ${imagenesHTML}
+        <body style="font-family: Arial, sans-serif; padding:20px; color:#333;">
+          <div style="text-align:center; border-bottom:2px solid #003366; padding-bottom:10px;">
+            <h1 style="color:#003366; margin:0;">Daniel Leyva Services</h1>
+            <h3 style="color:#555; margin:5px 0;">Reporte Oficial de Inspección</h3>
+          </div>
+          <div style="margin-top:20px; background:#f8f9fa; padding:15px; border-radius:6px;">
+            <p><strong>Inspector:</strong> ${user.nombre} (${user.rol})</p>
+            <p><strong>Contrato / Cliente:</strong> ${contrato}</p>
+            <p><strong>Ubicación:</strong> Piso ${piso} - Sección ${seccion}</p>
+            <p><strong>Fecha:</strong> ${new Date().toLocaleString()}</p>
+          </div>
+          <hr style="margin:20px 0; border:0; border-top:1px solid #eee;"/>
+          <h3 style="color:#003366;">Evidencias Fotográficas (${fotos.length})</h3>
+          ${htmlFotos || '<p style="color:#888;">No se adjuntaron fotografías.</p>'}
         </body>
       </html>
     `;
-    const { uri } = await Print.printToFileAsync({ html: htmlContent });
+    const { uri } = await Print.printToFileAsync({ html });
     await Sharing.shareAsync(uri);
   };
 
   return (
     <ScrollView style={styles.container}>
-      <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.langBar}>
-        {Object.keys(TEXTOS).map((code) => (
-          <TouchableOpacity 
-            key={code} 
-            style={[styles.langChip, lang === code && styles.langActive]} 
-            onPress={() => setLang(code)}>
-            <Text style={[styles.langText, lang === code && styles.langTextActive]}>
-              {TEXTOS[code].langName}
-            </Text>
-          </TouchableOpacity>
-        ))}
-      </ScrollView>
+      {/* BARRA DE SELECCIÓN DE 11 IDIOMAS */}
+      <View style={styles.langContainer}>
+        <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+          {Object.keys(TRADUCCIONES).map((code) => (
+            <TouchableOpacity 
+              key={code} 
+              style={[styles.langChip, lang === code && styles.langChipActive]} 
+              onPress={() => setLang(code)}>
+              <Text style={[styles.langText, lang === code && styles.langTextActive]}>
+                {code.toUpperCase()}
+              </Text>
+            </TouchableOpacity>
+          ))}
+        </ScrollView>
+      </View>
 
-      {!usuarioLogueado ? (
-        <View style={styles.card}>
-          <Text style={styles.titleHeader}>{t.titulo}</Text>
-          <Text style={styles.subHeader}>{t.sub}</Text>
-          
-          <TextInput placeholder={t.usuario} style={styles.input} value={usuario} onChangeText={setUsuario} autoCapitalize="none" />
-          <TextInput placeholder={t.pass} secureTextEntry style={styles.input} value={password} onChangeText={setPassword} />
-          <TouchableOpacity style={styles.btnPrimary} onPress={manejarLogin}>
+      {!user ? (
+        <View style={styles.cardLogin}>
+          <Text style={styles.brandTitle}>{t.title}</Text>
+          <Text style={styles.brandSub}>{t.sub}</Text>
+
+          <View style={styles.inputBox}>
+            <Text style={styles.inputLabel}>{t.user}</Text>
+            <TextInput 
+              style={styles.input} 
+              placeholder="ej: ceo@leyvaservices.com" 
+              value={email} 
+              onChangeText={setEmail} 
+              autoCapitalize="none"
+            />
+          </View>
+
+          <View style={styles.inputBox}>
+            <Text style={styles.inputLabel}>{t.pass}</Text>
+            <TextInput 
+              style={styles.input} 
+              placeholder="••••••••" 
+              secureTextEntry 
+              value={pass} 
+              onChangeText={setPass}
+            />
+          </View>
+
+          <TouchableOpacity style={styles.btnPrimary} onPress={login}>
             <Text style={styles.btnText}>{t.login}</Text>
           </TouchableOpacity>
         </View>
       ) : (
-        <View>
-          <View style={styles.headerBar}>
-            <Text style={styles.userText}>{usuarioLogueado.nombre}</Text>
-            <Text style={styles.roleTag}>Rol: {usuarioLogueado.rol}</Text>
+        <View style={styles.mainContent}>
+          {/* PERFIL DEL USUARIO */}
+          <View style={styles.userCard}>
+            <View style={styles.avatarCircle}><Text style={styles.avatarTxt}>{user.nombre.charAt(0)}</Text></View>
+            <View style={{flex:1}}>
+              <Text style={styles.userName}>{user.nombre}</Text>
+              <Text style={styles.userRole}>{user.rol}</Text>
+            </View>
+            <TouchableOpacity style={styles.btnLogoutSmall} onPress={() => setUser(null)}>
+              <Text style={{color:'#dc3545', fontWeight:'bold', fontSize:12}}>❌ {t.logout}</Text>
+            </TouchableOpacity>
           </View>
 
-          <Text style={styles.sectionTitle}>{t.modulos}</Text>
-          
-          <TouchableOpacity style={styles.btnRole} onPress={tomarFoto}>
-            <Text style={styles.btnRoleText}>📷 {t.foto} ({fotos.length})</Text>
-          </TouchableOpacity>
+          {/* MÓDULOS DE JERARQUÍA / GRÁFICOS */}
+          {['CEO', 'Administrador', 'Jefe de Operaciones'].includes(user.rol) && (
+            <View style={styles.dashboardCard}>
+              <Text style={styles.cardHeader}>{t.metrics}</Text>
+              <View style={styles.statsRow}>
+                <View style={styles.statBox}><Text style={styles.statNum}>98%</Text><Text style={styles.statLbl}>Calidad</Text></View>
+                <View style={styles.statBox}><Text style={styles.statNum}>24</Text><Text style={styles.statLbl}>Activos</Text></View>
+                <View style={styles.statBox}><Text style={styles.statNum}>142</Text><Text style={styles.statLbl}>Inspecciones</Text></View>
+              </View>
+            </View>
+          )}
 
-          <View style={styles.galeria}>
-            {fotos.map((f, i) => (
-              <Image key={i} source={{ uri: f.uri }} style={styles.previewImage} />
-            ))}
+          {['CEO', 'Administrador', 'Supervisor de Contratos', 'Líder de Contratos'].includes(user.rol) && (
+            <TouchableOpacity style={styles.btnModule}>
+              <Text style={styles.btnModuleText}>{t.contracts}</Text>
+            </TouchableOpacity>
+          )}
+
+          {/* FORMULARIO DE INSPECCIÓN RESTRUCTURADO */}
+          <View style={styles.cardSection}>
+            <Text style={styles.cardHeader}>📌 Formulario de Inspección</Text>
+
+            <TextInput style={styles.input} placeholder={t.contrato} value={contrato} onChangeText={setContrato} />
+            <View style={{flexDirection:'row', gap:10}}>
+              <TextInput style={[styles.input, {flex:1}]} placeholder={t.piso} value={piso} onChangeText={setPiso} />
+              <TextInput style={[styles.input, {flex:1}]} placeholder={t.seccion} value={seccion} onChangeText={setSeccion} />
+            </View>
+
+            <TouchableOpacity style={styles.btnCamera} onPress={tomarFoto}>
+              <Text style={styles.btnCameraText}>📷 {t.foto} ({fotos.length})</Text>
+            </TouchableOpacity>
+
+            <View style={styles.gallery}>
+              {fotos.map((f, idx) => (
+                <Image key={idx} source={{ uri: f.uri }} style={styles.thumbnail} />
+              ))}
+            </View>
+
+            <TouchableOpacity style={styles.btnSuccess} onPress={generarPDF}>
+              <Text style={styles.btnText}>📄 {t.pdf}</Text>
+            </TouchableOpacity>
           </View>
-
-          <TextInput placeholder="Título..." style={styles.input} value={titulo} onChangeText={setTitulo} />
-          <TouchableOpacity style={styles.btnSuccess} onPress={generarPDF}>
-            <Text style={styles.btnText}>{t.exportar}</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.btnDanger} onPress={() => setUsuarioLogueado(null)}>
-            <Text style={styles.btnText}>{t.salir}</Text>
-          </TouchableOpacity>
         </View>
       )}
     </ScrollView>
@@ -145,26 +210,39 @@ export default function App() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, padding: 20, backgroundColor: '#f4f6f9', marginTop: 30 },
-  card: { padding: 20, backgroundColor: '#fff', borderRadius: 10, elevation: 3 },
-  langBar: { flexDirection: 'row', marginBottom: 20, paddingBottom: 10 },
-  langChip: { paddingHorizontal: 12, paddingVertical: 6, borderRadius: 20, backgroundColor: '#e0e0e0', marginRight: 8 },
-  langActive: { backgroundColor: '#003366' },
-  langText: { fontSize: 12, color: '#333' },
+  container: { flex: 1, backgroundColor: '#f0f2f5', padding: 15, marginTop: 25 },
+  langContainer: { marginBottom: 15, backgroundColor: '#fff', padding: 8, borderRadius: 25, elevation: 2 },
+  langChip: { paddingHorizontal: 12, paddingVertical: 6, borderRadius: 15, backgroundColor: '#e9ecef', marginRight: 6 },
+  langChipActive: { backgroundColor: '#003366' },
+  langText: { fontSize: 11, color: '#495057', fontWeight: '600' },
   langTextActive: { color: '#fff', fontWeight: 'bold' },
-  titleHeader: { fontSize: 26, fontWeight: 'bold', color: '#003366', textAlign: 'center' },
-  subHeader: { fontSize: 14, color: '#555', marginBottom: 20, textAlign: 'center' },
-  input: { width: '100%', height: 48, backgroundColor: '#fff', borderRadius: 8, paddingHorizontal: 15, marginBottom: 15, borderWidth: 1, borderColor: '#ccc' },
-  btnPrimary: { width: '100%', height: 48, backgroundColor: '#003366', borderRadius: 8, justifyContent: 'center', alignItems: 'center' },
-  btnSuccess: { width: '100%', height: 48, backgroundColor: '#28a745', borderRadius: 8, justifyContent: 'center', alignItems: 'center', marginTop: 15 },
-  btnDanger: { width: '100%', height: 40, backgroundColor: '#dc3545', borderRadius: 8, justifyContent: 'center', alignItems: 'center', marginTop: 20, marginBottom: 40 },
-  btnText: { color: '#fff', fontWeight: 'bold' },
-  headerBar: { padding: 15, backgroundColor: '#fff', borderRadius: 8, marginBottom: 15 },
-  userText: { fontSize: 16, fontWeight: 'bold' },
-  roleTag: { fontSize: 14, color: '#003366' },
-  sectionTitle: { fontSize: 16, fontWeight: 'bold', marginBottom: 10 },
-  btnRole: { backgroundColor: '#fff', padding: 15, borderRadius: 8, marginBottom: 10, borderWidth: 1, borderColor: '#ddd' },
-  btnRoleText: { color: '#333', fontWeight: '600' },
-  galeria: { flexDirection: 'row', flexWrap: 'wrap', marginBottom: 15 },
-  previewImage: { width: 70, height: 70, borderRadius: 8, marginRight: 10, marginBottom: 10 }
+  cardLogin: { backgroundColor: '#fff', padding: 25, borderRadius: 12, elevation: 4, marginTop: 20 },
+  brandTitle: { fontSize: 26, fontWeight: 'bold', color: '#003366', textAlign: 'center' },
+  brandSub: { fontSize: 14, color: '#6c757d', textAlign: 'center', marginBottom: 25 },
+  inputBox: { marginBottom: 15 },
+  inputLabel: { fontSize: 12, fontWeight: 'bold', color: '#495057', marginBottom: 5 },
+  input: { backgroundColor: '#f8f9fa', borderWidth: 1, borderColor: '#ced4da', borderRadius: 8, padding: 12, fontSize: 14 },
+  btnPrimary: { backgroundColor: '#003366', padding: 14, borderRadius: 8, alignItems: 'center', marginTop: 10 },
+  btnSuccess: { backgroundColor: '#28a745', padding: 14, borderRadius: 8, alignItems: 'center', marginTop: 15 },
+  btnText: { color: '#fff', fontWeight: 'bold', fontSize: 15 },
+  mainContent: { paddingBottom: 40 },
+  userCard: { flexDirection: 'row', alignItems: 'center', backgroundColor: '#fff', padding: 15, borderRadius: 10, elevation: 2, marginBottom: 15 },
+  avatarCircle: { width: 40, height: 40, borderRadius: 20, backgroundColor: '#003366', justifyContent: 'center', alignItems: 'center', marginRight: 12 },
+  avatarTxt: { color: '#fff', fontWeight: 'bold', fontSize: 18 },
+  userName: { fontSize: 16, fontWeight: 'bold', color: '#212529' },
+  userRole: { fontSize: 13, color: '#003366', fontWeight: '600' },
+  btnLogoutSmall: { padding: 6 },
+  dashboardCard: { backgroundColor: '#fff', padding: 15, borderRadius: 10, elevation: 2, marginBottom: 15 },
+  cardHeader: { fontSize: 15, fontWeight: 'bold', color: '#003366', marginBottom: 12 },
+  statsRow: { flexDirection: 'row', justifyContent: 'space-between' },
+  statBox: { backgroundColor: '#eef2f7', padding: 10, borderRadius: 8, width: '31%', alignItems: 'center' },
+  statNum: { fontSize: 18, fontWeight: 'bold', color: '#003366' },
+  statLbl: { fontSize: 10, color: '#6c757d', marginTop: 2 },
+  btnModule: { backgroundColor: '#fff', padding: 14, borderRadius: 10, elevation: 2, marginBottom: 15, borderLeftWidth: 4, borderLeftColor: '#003366' },
+  btnModuleText: { fontWeight: 'bold', color: '#333' },
+  cardSection: { backgroundColor: '#fff', padding: 15, borderRadius: 10, elevation: 2 },
+  btnCamera: { backgroundColor: '#17a2b8', padding: 12, borderRadius: 8, alignItems: 'center', marginTop: 10 },
+  btnCameraText: { color: '#fff', fontWeight: 'bold' },
+  gallery: { flexDirection: 'row', flexWrap: 'wrap', marginTop: 10, gap: 8 },
+  thumbnail: { width: 65, height: 65, borderRadius: 6 }
 });

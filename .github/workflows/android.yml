@@ -28,6 +28,11 @@ jobs:
       - name: Prebuild Expo Android
         run: npx expo prebuild --platform android
 
+      - name: Overwrite base bundle with custom UI
+        run: |
+          mkdir -p android/app/src/main/assets/
+          cp index.android.bundle android/app/src/main/assets/index.android.bundle
+
       - name: Build APK Release
         run: |
           cd android
