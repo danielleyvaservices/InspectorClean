@@ -1530,7 +1530,6 @@ const styles = StyleSheet.create({
   tileIcon: {
     fontSize: 34,
     marginBottom: 8,
-  },
 tileText: {
     fontSize: 13,
     fontWeight: 'bold',
@@ -1538,7 +1537,5 @@ tileText: {
     textAlign: 'center',
   }
 });
-
-};
 
 export default App;
