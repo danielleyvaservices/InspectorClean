@@ -128,7 +128,6 @@ const TRANSLATIONS = {
   }
 };
 
-export default function App() {
 const [currentLang, setCurrentLang] = useState('es'); // Español oficial por defecto
 const [isLangModalVisible, setLangModalVisible] = useState(false);
   // --- SOPORTE Y RECUPERACIÓN DE CONTRASEÑA ---
@@ -1538,5 +1537,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   }
 });
+
+
 
 export default App;
