@@ -743,7 +743,6 @@ const [isLangModalVisible, setLangModalVisible] = useState(false);
         }
       };
     });
-  };
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: '#f4f6f9', padding: 20 }}>
@@ -1539,3 +1538,8 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   }
 })
+
+);
+};
+
+export default App;
