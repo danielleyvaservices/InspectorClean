@@ -778,8 +778,8 @@ const [isLangModalVisible, setLangModalVisible] = useState(false);
         
         {fase === 'LOGIN' && (
           <View style={{ marginTop: 20, backgroundColor: '#ffffff', padding: 25, borderRadius: 12, shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.1, shadowRadius: 6, elevation: 3 }}>
-            <Text style={{ fontSize: 24, fontWeight: 'bold', marginBottom: 5, textAlign: 'center',, color: '#2c3e50' }}>{t.title}</Text>
-            <Text style={{ fontSize: 13, color: '#7f8c8d', textAlign: 'center',, marginBottom: 25 }}>{t.subtitle}</Text>
+            <Text style={{ fontSize: 24, fontWeight: 'bold', marginBottom: 5, textAlign: 'center', color: '#2c3e50' }}>{t.title}</Text>
+            <Text style={{ fontSize: 13, color: '#7f8c8d', textAlign: 'center', marginBottom: 25 }}>{t.subtitle}</Text>
             
             <Text style={{ marginBottom: 5, fontWeight: 'bold', color: '#34495e' }}>{t.user}</Text>
             <TextInput style={styles.input} placeholder="ceo, soporte1, admin1, supcon1, lider1" value={u} onChangeText={setU} autoCapitalize="none" />
@@ -1530,11 +1530,11 @@ const styles = StyleSheet.create({
   tileIcon: {
     fontSize: 34,
     marginBottom: 8,
-tileText: {
+  tileText: {
     fontSize: 13,
     fontWeight: 'bold',
     color: '#2c3e50',
-    textAlign: 'center',,
+    textAlign: 'center',
   }
 });
 
