@@ -4,7 +4,6 @@ import * as ImagePicker from 'expo-image-picker';
 import * as Print from 'expo-print';
 import * as Sharing from 'expo-sharing';
 
-// DICCIONARIO DE 11 IDIOMAS
 const TEXTOS = {
   es: { titulo: "InspectorClean", sub: "Daniel Leyva Services", usuario: "Correo corporativo", pass: "Contraseña", login: "Iniciar Sesión", denegado: "Acceso Denegado", modulos: "Módulos Autorizados", foto: "Capturar Evidencia", exportar: "Exportar y Compartir PDF", salir: "Cerrar Sesión", langName: "Español" },
   fr: { titulo: "InspectorClean", sub: "Daniel Leyva Services", usuario: "Courriel professionnel", pass: "Mot de passe", login: "Se connecter", denegado: "Accès refusé", modulos: "Modules autorisés", foto: "Prendre une photo", exportar: "Exporter et partager PDF", salir: "Déconnexion", langName: "Français" },
@@ -89,7 +88,6 @@ export default function App() {
 
   return (
     <ScrollView style={styles.container}>
-      {/* SELECTOR DE 11 IDIOMAS */}
       <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.langBar}>
         {Object.keys(TEXTOS).map((code) => (
           <TouchableOpacity 
