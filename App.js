@@ -178,26 +178,22 @@ const [isLangModalVisible, setLangModalVisible] = useState(false);
       Alert.alert('Error PDF', e.message);
     }
   };
-
   const enviarPDFPorCorreo = async () => {
     try {
       const disponible = await MailComposer.isAvailableAsync();
+      if (!disponible) {
         Alert.alert('Sin Correo', 'No hay un cliente de correo configurado en el dispositivo.');
         return;
       }
-      const html = '<html><body><h1>Reporte InspectorClean</h1></body></html>';
-      const { uri } = await Print.printToFileAsync({ html });
       await MailComposer.composeAsync({
-        recipients: ['soporte1@inspectorclean.com'],
-        subject: 'Reporte de Inspección InspectorClean',
-        body: 'Adjunto el reporte PDF de la última inspección.',
-        attachments: [uri],
+        recipients: ['daniel.leyvaservices@gmail.com'],
+        subject: 'Reporte de Inspección - InspectorClean',
+        body: 'Adjunto se encuentra el reporte detallado de la inspección realizada.',
       });
-    } catch (e) {
-      Alert.alert('Error Correo', e.message);
+    } catch (error) {
+      Alert.alert('Error', 'No se pudo abrir la aplicación de correo.');
     }
   };
-
   const [u, setU] = useState('soporte1');
   const [p, setP] = useState(''); 
   const [usuarioActual, setUsuarioActual] = useState(null);
