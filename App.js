@@ -1,79 +1,6 @@
-import * as ImagePicker from 'expo-image-picker';
-import * as Print from 'expo-print';
-import * as Sharing from 'expo-sharing';
-import * as MailComposer from 'expo-mail-composer';
 import React, { useState, useEffect } from 'react';
 import { Text, View, TouchableOpacity, ScrollView, SafeAreaView, Alert, TextInput, StyleSheet, Linking } from 'react-native';
 import { Camera, CameraView, useCameraPermissions } from 'expo-camera';
-const LANGUAGES = [
-  { code: 'es', label: 'Español (Latinoamérica)', flag: '🇲🇽' },
-  { code: 'fr', label: 'Français', flag: '🇫🇷' },
-  { code: 'en', label: 'English', flag: '🇺🇸' },
-  { code: 'pt', label: 'Português', flag: '🇧🇷' },
-  { code: 'it', label: 'Italiano', flag: '🇮🇹' },
-  { code: 'el', label: 'Ελληνικά (Griego)', flag: '🇬🇷' },
-  { code: 'de', label: 'Deutsch', flag: '🇩🇪' },
-  { code: 'ko', label: '한국어 (Coreano)', flag: '🇰🇷' },
-  { code: 'ja', label: '日本語 (Japonés)', flag: '🇯🇵' },
-  { code: 'ar', label: 'العربية (Árabe)', flag: '🇸🇦' },
-  { code: 'zh', label: '中文 (Chino)', flag: '🇨🇳' },
-];
-{/* BOTÓN SUPERIOR DE CONFIGURACIÓN DE IDIOMA */}
-<View style={{ flexDirection: 'row', justifyContent: 'flex-end', paddingHorizontal: 20, paddingTop: 10 }}>
-  <TouchableOpacity
-    style={{ flexDirection: 'row', alignItems: 'center', backgroundColor: '#FFF', padding: 8, borderRadius: 20, elevation: 2 }}
-    onPress={() => setLangModalVisible(true)}
-  >
-    <Ionicons name="settings-outline" size={22} color="#444" />
-    <MaterialIcons name="language" size={22} color="#007AFF" style={{ marginLeft: 6 }} />
-  </TouchableOpacity>
-</View>
-
-{/* MODAL DESPLEGABLE CON LOS 11 IDIOMAS */}
-<Modal
-  visible={isLangModalVisible}
-  animationType="slide"
-  transparent={true}
-  onRequestClose={() => setLangModalVisible(false)}
->
-  <View style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'flex-end' }}>
-    <View style={{ backgroundColor: '#FFF', borderTopLeftRadius: 20, borderTopRightRadius: 20, padding: 20, maxHeight: '70%' }}>
-      <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 15, borderBottomWidth: 1, borderBottomColor: '#EEE', paddingBottom: 10 }}>
-        <Text style={{ fontSize: 18, fontWeight: 'bold' }}>Seleccionar Idioma / Select Language</Text>
-        <TouchableOpacity onPress={() => setLangModalVisible(false)}>
-          <Ionicons name="close" size={26} color="#333" />
-        </TouchableOpacity>
-      </View>
-
-      <FlatList
-        data={LANGUAGES}
-        keyExtractor={(item) => item.code}
-        renderItem={({ item }) => (
-          <TouchableOpacity
-            style={{
-              flexDirection: 'row',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-              paddingVertical: 14,
-              paddingHorizontal: 10,
-              backgroundColor: currentLang === item.code ? '#EBF3FF' : 'transparent',
-              borderRadius: 8
-            }}
-            onPress={() => {
-              setCurrentLang(item.code);
-              setLangModalVisible(false);
-            }}
-          >
-            <Text style={{ fontSize: 16 }}>{item.flag}   {item.label}</Text>
-            {currentLang === item.code && (
-              <Ionicons name="checkmark-circle" size={20} color="#007AFF" />
-            )}
-          </TouchableOpacity>
-        )}
-      />
-    </View>
-  </View>
-</Modal>
 
 const TRANSLATIONS = {
   es: {
@@ -128,71 +55,7 @@ const TRANSLATIONS = {
   }
 };
 
-const [currentLang, setCurrentLang] = useState('es'); // Español oficial por defecto
-const [isLangModalVisible, setLangModalVisible] = useState(false);
-  // --- SOPORTE Y RECUPERACIÓN DE CONTRASEÑA ---
-  const [modalForgotVisible, setModalForgotVisible] = useState(false);
-  const [forgotNombre, setForgotNombre] = useState('');
-  const [forgotTelefono, setForgotTelefono] = useState('');
-  const [forgotCorreo, setForgotCorreo] = useState('');
-
-const enviarSolicitudSoporte1 = () => {
-    if (!forgotNombre || !forgotTelefono || !forgotCorreo) {
-      Alert.alert('Campos Incompletos', 'Por favor llena todos los campos para notificar a Soporte 1.');
-      return;
-    }
-    Alert.alert(
-      'Solicitud Enviada a Soporte 1',
-      `Gracias ${forgotNombre}. Se ha notificado a Soporte 1. Te contactaremos al correo ${forgotCorreo} o teléfono ${forgotTelefono} con tus credenciales.`
-    );
-    setForgotNombre('');
-    setForgotTelefono('');
-    setForgotCorreo('');
-    setModalForgotVisible(false);
-  };
-// --- CÁMARA REAL Y CAPTURA ---
-  const tomarFotoEvidencia = async () => {
-    const perm = await ImagePicker.requestCameraPermissionsAsync();
-    if (!perm.granted) {
-      Alert.alert('Permiso Denegado', 'Se requiere acceso a la cámara.');
-      return;
-    }
-    const res = await ImagePicker.launchCameraAsync({ allowsEditing: true, quality: 0.7 });
-    if (!res.canceled) {
-      Alert.alert('Foto Capturada', 'Imagen guardada correctamente como evidencia.');
-    }
-  };
-
-  // --- REPORTES PDF Y ENVÍO POR CORREO ---
-  const generarYCompartirPDF = async () => {
-    try {
-      const html = '<html><body><h1 style="color:#0284c7;">Reporte InspectorClean</h1><p>Inspección completada con éxito.</p></body></html>';
-      const { uri } = await Print.printToFileAsync({ html });
-      if (await Sharing.isAvailableAsync()) {
-        await Sharing.shareAsync(uri);
-      } else {
-        Alert.alert('PDF Generado', 'Guardado en: ' + uri);
-      }
-    } catch (e) {
-      Alert.alert('Error PDF', e.message);
-    }
-  };
-  const enviarPDFPorCorreo = async () => {
-    try {
-      const disponible = await MailComposer.isAvailableAsync();
-      if (!disponible) {
-        Alert.alert('Sin Correo', 'No hay un cliente de correo configurado en el dispositivo.');
-        return;
-      }
-      await MailComposer.composeAsync({
-        recipients: ['daniel.leyvaservices@gmail.com'],
-        subject: 'Reporte de Inspección - InspectorClean',
-        body: 'Adjunto se encuentra el reporte detallado de la inspección realizada.',
-      });
-    } catch (error) {
-      Alert.alert('Error', 'No se pudo abrir la aplicación de correo.');
-    }
-  };
+export default function App() {
   const [u, setU] = useState('soporte1');
   const [p, setP] = useState(''); 
   const [usuarioActual, setUsuarioActual] = useState(null);
@@ -742,6 +605,7 @@ const enviarSolicitudSoporte1 = () => {
         }
       };
     });
+  };
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: '#f4f6f9', padding: 20 }}>
@@ -1123,7 +987,7 @@ const enviarSolicitudSoporte1 = () => {
 
                       {(['SUPERVISOR', 'SUPERVISOR_CONTRATO', 'LIDER_DE_CONTRATO'].includes(usuarioActual?.rol)) && (
                         <TouchableOpacity style={[styles.btnR, { backgroundColor: '#f39c12', marginTop: 8 }]} onPress={() => iniciarEdicionComanda(cmd)}>
-                          <Text style={{ color: '#FFF', fontWeight: 'bold', textAlign: 'center', }}>✏️ Modificar / Quitar / Agregar Artículos</Text>
+                          <Text style={{ color: '#FFF', fontWeight: 'bold', textAlign: 'center' }}>✏️ Modificar / Quitar / Agregar Artículos</Text>
                         </TouchableOpacity>
                       )}
                     </>
@@ -1536,8 +1400,4 @@ const styles = StyleSheet.create({
     color: '#2c3e50',
     textAlign: 'center',
   }
-});
-
-
-
-export default App;
+})
