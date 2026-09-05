@@ -1,32 +1,38 @@
 {
   "expo": {
     "name": "InspectorClean",
-    "slug": "inspector-clean",
-    "version": "1.0.0",
+    "slug": "InspectorClean",
+    "version": "1.0.1",
     "orientation": "portrait",
+    "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
+    "splash": {
+      "image": "./assets/icon.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
+    "ios": {
+      "supportsTablet": true
+    },
     "android": {
-      "package": "com.dannyservices.inspectorclean",
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#ffffff"
+      },
+      "package": "com.danielleyvaservices.inspectorclean",
       "permissions": [
-        "android.permission.CAMERA",
-        "android.permission.READ_EXTERNAL_STORAGE",
-        "android.permission.WRITE_EXTERNAL_STORAGE",
-        "android.permission.RECORD_AUDIO"
+        "CAMERA",
+        "READ_EXTERNAL_STORAGE",
+        "WRITE_EXTERNAL_STORAGE"
       ]
     },
     "plugins": [
       [
-        "expo-image-picker",
+        "expo-camera",
         {
-          "photosPermission": "Acceso a fotos para evidencias.",
-          "cameraPermission": "Acceso a cámara para fotos de inspección."
+          "cameraPermission": "Permite a InspectorClean acceder a la cámara para tomar evidencias."
         }
       ]
-    ],
-    "extra": {
-      "eas": {
-        "projectId": "e1485283-3b69-47ce-a63f-a0174cd8ad6c"
-      }
-    }
+    ]
   }
 }
