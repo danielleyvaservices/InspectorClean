@@ -25,19 +25,16 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      - name: Prebuild Expo Android
-        run: npx expo prebuild --platform android
-
-      - name: Overwrite base bundle with custom UI
+      - name: Inject Full Codebase Bundle
         run: |
           mkdir -p android/app/src/main/assets/
           cp index.android.bundle android/app/src/main/assets/index.android.bundle
 
-      - name: Build APK Release
+      - name: Build APK Release (Skip JS Bundle Step)
         run: |
           cd android
           chmod +x gradlew
-          ./gradlew assembleRelease --no-daemon
+          ./gradlew assembleRelease -x bundleReleaseJsAndAssets --no-daemon
 
       - name: Upload APK Artifact
         uses: actions/upload-artifact@v4
