@@ -25,12 +25,12 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      - name: Inject Full Codebase Bundle
+      - name: Build JS Bundle on Cloud Server
         run: |
           mkdir -p android/app/src/main/assets/
-          cp index.android.bundle android/app/src/main/assets/index.android.bundle
+          npx expo export:embed --platform android --dev false --entry-file App.js --bundle-output android/app/src/main/assets/index.android.bundle
 
-      - name: Build APK Release (Skip JS Bundle Step)
+      - name: Build APK Release
         run: |
           cd android
           chmod +x gradlew
