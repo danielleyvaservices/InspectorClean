@@ -23,18 +23,13 @@ jobs:
           java-version: '17'
 
       - name: Install dependencies
-        run: npm install
+        run: npm ci || npm install
 
-      - name: Build JS Bundle on Cloud Server
-        run: |
-          mkdir -p android/app/src/main/assets/
-          npx expo export:embed --platform android --dev false --entry-file App.js --bundle-output android/app/src/main/assets/index.android.bundle
-
-      - name: Build APK Release
+      - name: Build Android Release APK
         run: |
           cd android
           chmod +x gradlew
-          ./gradlew assembleRelease -x bundleReleaseJsAndAssets --no-daemon
+          ./gradlew assembleRelease --no-daemon
 
       - name: Upload APK Artifact
         uses: actions/upload-artifact@v4
